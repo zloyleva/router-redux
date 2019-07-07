@@ -1,12 +1,76 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
+// import React from 'react';
+// import ReactDOM from 'react-dom';
+// import './index.css';
+// import App from './App';
+// import * as serviceWorker from './serviceWorker';
+//
+// ReactDOM.render(<App />, document.getElementById('root'));
+//
+// // If you want your app to work offline and load faster, you can change
+// // unregister() to register() below. Note this comes with some pitfalls.
+// // Learn more about service workers: https://bit.ly/CRA-PWA
+// serviceWorker.unregister();
+
 import * as serviceWorker from './serviceWorker';
 
-ReactDOM.render(<App />, document.getElementById('root'));
+import React from 'react';
+import { render } from 'react-dom';
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
+import About from './components/About.js';
+import Home from './components/Home';
+import Topics from './components/Topics';
+
+
+import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
+
+import { createStore, combineReducers, applyMiddleware,compose } from 'redux';
+import { Provider } from 'react-redux'
+import createHistory from 'history/createBrowserHistory'
+import { ConnectedRouter, routerReducer, routerMiddleware } from 'react-router-redux'
+
+const history = createHistory();
+
+// Build the middleware for intercepting and dispatching navigation actions
+const middleware = routerMiddleware(history);
+
+// Add the reducer to your store on the `router` key
+// Also apply our middleware for navigating
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+const store = createStore(
+    combineReducers({
+        router: routerReducer,
+    }),
+    composeEnhancers(
+        applyMiddleware(middleware)
+    )
+);
+
+const BasicExample = () => (
+    <div>
+        <ul>
+            <li><Link to="/">Home</Link></li>
+            <li><Link to="/about">About</Link></li>
+            <li><Link to="/topics">Topics</Link></li>
+        </ul>
+
+        <hr />
+
+        <Route exact path="/" component={Home} />
+        <Route path="/about" component={About} />
+        <Route path="/topics" component={Topics} />
+    </div>
+);
+
+render(
+    <Provider store={store}>
+        <Router>
+            <ConnectedRouter history={history} store={store}>
+                <BasicExample />
+            </ConnectedRouter>
+        </Router>
+
+    </Provider>,
+    document.getElementById('root')
+);
+
 serviceWorker.unregister();
