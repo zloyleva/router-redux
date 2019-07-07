@@ -21,14 +21,15 @@ import Home from './components/Home';
 import Topics from './components/Topics';
 
 
-import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
+import { Router, Route, Link } from 'react-router-dom';
 
 import { createStore, combineReducers, applyMiddleware,compose } from 'redux';
 import { Provider } from 'react-redux'
-import createHistory from 'history/createBrowserHistory'
+import { createBrowserHistory } from 'history'
 import { ConnectedRouter, routerReducer, routerMiddleware } from 'react-router-redux'
+import logger from 'redux-logger'
 
-const history = createHistory();
+const history = createBrowserHistory();
 
 // Build the middleware for intercepting and dispatching navigation actions
 const middleware = routerMiddleware(history);
@@ -41,7 +42,7 @@ const store = createStore(
         router: routerReducer,
     }),
     composeEnhancers(
-        applyMiddleware(middleware)
+        applyMiddleware(middleware, logger)
     )
 );
 
@@ -63,12 +64,11 @@ const BasicExample = () => (
 
 render(
     <Provider store={store}>
-        <Router>
-            <ConnectedRouter history={history} store={store}>
+        <ConnectedRouter history={history} store={store}>
+            <Router history={history}>
                 <BasicExample />
-            </ConnectedRouter>
-        </Router>
-
+            </Router>
+        </ConnectedRouter>
     </Provider>,
     document.getElementById('root')
 );
